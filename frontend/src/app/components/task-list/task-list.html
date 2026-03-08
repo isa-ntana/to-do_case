@@ -1,0 +1,134 @@
+<div class="task-list">
+
+  <header class="task-list__header">
+    <div class="task-list__header-top">
+      <div class="task-list__brand">
+        <span class="task-list__brand-icon">✓</span>
+        <h1 class="task-list__brand-name">TaskFlow</h1>
+      </div>
+      <button class="task-list__new-btn" (click)="onNewTaskClick()">
+        + Nova tarefa
+      </button>
+    </div>
+
+    <div class="task-list__counters">
+      <div class="task-list__counter">
+        <span class="task-list__counter-value">{{ totalCount() }}</span>
+        <span class="task-list__counter-label">Total</span>
+      </div>
+      <div class="task-list__counter-divider"></div>
+      <div class="task-list__counter">
+        <span class="task-list__counter-value task-list__counter-value--pending">{{ pendingCount() }}</span>
+        <span class="task-list__counter-label">Pendentes</span>
+      </div>
+      <div class="task-list__counter-divider"></div>
+      <div class="task-list__counter">
+        <span class="task-list__counter-value task-list__counter-value--progress">{{ inProgressCount() }}</span>
+        <span class="task-list__counter-label">Em progresso</span>
+      </div>
+      <div class="task-list__counter-divider"></div>
+      <div class="task-list__counter">
+        <span class="task-list__counter-value task-list__counter-value--completed">{{ completedCount() }}</span>
+        <span class="task-list__counter-label">Concluídas</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="task-list__toolbar">
+    <input
+      type="text"
+      class="task-list__search"
+      placeholder="Buscar tarefa..."
+      [(ngModel)]="searchQuery"
+    />
+
+    <div class="task-list__filters">
+      <select
+        class="task-list__filter-select"
+        [value]="filterStatus()"
+        (change)="filterStatus.set($any($event.target).value); onFilterChange()"
+      >
+        @for (option of statusOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+
+      <select
+        class="task-list__filter-select"
+        [value]="filterPriority()"
+        (change)="filterPriority.set($any($event.target).value); onFilterChange()"
+      >
+        @for (option of priorityOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+
+      <input
+        type="date"
+        class="task-list__filter-date"
+        [value]="filterDueDate()"
+        (change)="filterDueDate.set($any($event.target).value); onFilterChange()"
+      />
+
+      @if (hasActiveFilters) {
+        <button class="task-list__clear-filters" (click)="onClearFilters()">
+          Limpar filtros
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="task-list__content">
+    @if (loading()) {
+      <div class="task-list__state">
+        <div class="task-list__spinner"></div>
+        <p>Carregando tarefas...</p>
+      </div>
+    } @else if (error()) {
+      <div class="task-list__state task-list__state--error">
+        <p>{{ error() }}</p>
+        <button class="task-list__retry" (click)="loadTasks()">Tentar novamente</button>
+      </div>
+    } @else if (filteredTasks.length === 0) {
+      <div class="task-list__state">
+        @if (hasActiveFilters) {
+          <p class="task-list__empty-text">Nenhuma tarefa encontrada para os filtros aplicados.</p>
+          <button class="task-list__retry" (click)="onClearFilters()">Limpar filtros</button>
+        } @else {
+          <p class="task-list__empty-text">Nenhuma tarefa ainda.</p>
+          <p class="task-list__empty-sub">Clique em "Nova tarefa" para começar.</p>
+        }
+      </div>
+    } @else {
+      <div class="task-list__cards">
+        @for (task of filteredTasks; track task.id) {
+          <app-task-card
+            [task]="task"
+            (cardClicked)="onCardClicked($event)"
+          />
+        }
+      </div>
+    }
+  </div>
+
+</div>
+
+@if (selectedTask()) {
+  <app-task-details
+    [task]="selectedTask()!"
+    (closed)="onDrawerClosed()"
+    (taskUpdated)="loadTasks()"
+    (taskDeleted)="onDrawerClosed()"
+  />
+}
+
+@if (showCreateForm()) {
+  <div class="task-list__modal-overlay" (click)="onCreateFormCancelled()"></div>
+  <div class="task-list__modal">
+    <app-task-form
+      [loading]="isCreating()"
+      (formSubmitted)="onCreateFormSubmit($event)"
+      (formCancelled)="onCreateFormCancelled()"
+    />
+  </div>
+}
