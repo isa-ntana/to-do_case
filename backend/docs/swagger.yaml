@@ -1,0 +1,306 @@
+basePath: /api/v1
+definitions:
+  domain.CreateTaskInput:
+    properties:
+      description:
+        example: Revisar conceitos de goroutines
+        type: string
+      due_date:
+        example: "2026-04-01"
+        type: string
+      priority:
+        allOf:
+        - $ref: '#/definitions/domain.Priority'
+        example: high
+      status:
+        allOf:
+        - $ref: '#/definitions/domain.Status'
+        example: pending
+      title:
+        example: Estudar Golang
+        maxLength: 100
+        minLength: 3
+        type: string
+    required:
+    - due_date
+    - title
+    type: object
+  domain.Priority:
+    enum:
+    - low
+    - medium
+    - high
+    type: string
+    x-enum-varnames:
+    - PriorityLow
+    - PriorityMedium
+    - PriorityHigh
+  domain.Status:
+    enum:
+    - pending
+    - in_progress
+    - completed
+    - cancelled
+    type: string
+    x-enum-varnames:
+    - StatusPending
+    - StatusInProgress
+    - StatusCompleted
+    - StatusCancelled
+  domain.Task:
+    properties:
+      created_at:
+        example: "2026-03-08T22:00:00Z"
+        type: string
+      description:
+        example: Revisar conceitos de goroutines
+        type: string
+      due_date:
+        example: "2026-04-01"
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      priority:
+        allOf:
+        - $ref: '#/definitions/domain.Priority'
+        example: high
+      status:
+        allOf:
+        - $ref: '#/definitions/domain.Status'
+        example: pending
+      title:
+        example: Estudar Golang
+        type: string
+      updated_at:
+        example: "2026-03-08T22:00:00Z"
+        type: string
+    type: object
+  domain.UpdateTaskInput:
+    properties:
+      description:
+        example: Conteúdo atualizado
+        type: string
+      due_date:
+        example: "2026-04-10"
+        type: string
+      priority:
+        allOf:
+        - $ref: '#/definitions/domain.Priority'
+        example: medium
+      status:
+        allOf:
+        - $ref: '#/definitions/domain.Status'
+        example: in_progress
+      title:
+        example: Estudar Golang - Atualizado
+        type: string
+    type: object
+  handler.errorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  handler.successResponse:
+    properties:
+      data: {}
+    type: object
+host: localhost:8080
+info:
+  contact:
+    name: Isabela Santana
+    url: https://github.com/isa-ntana/to-do_case
+  description: API REST para gerenciamento de tarefas (To-Do List). Desenvolvida como
+    desafio técnico para o Itaú.
+  title: TaskFlow API
+  version: "1.0"
+paths:
+  /tasks:
+    get:
+      description: Retorna todas as tarefas, com filtros opcionais por status, prioridade
+        e data de vencimento
+      parameters:
+      - description: Filtrar por status
+        enum:
+        - pending
+        - in_progress
+        - completed
+        - cancelled
+        in: query
+        name: status
+        type: string
+      - description: Filtrar por prioridade
+        enum:
+        - low
+        - medium
+        - high
+        in: query
+        name: priority
+        type: string
+      - description: Filtrar por data de vencimento (YYYY-MM-DD)
+        in: query
+        name: due_date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.successResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/domain.Task'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Listar tarefas
+      tags:
+      - tasks
+    post:
+      consumes:
+      - application/json
+      description: Cria uma nova tarefa com título, descrição, prioridade e data de
+        vencimento
+      parameters:
+      - description: Dados da tarefa
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateTaskInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.successResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.Task'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Criar tarefa
+      tags:
+      - tasks
+  /tasks/{id}:
+    delete:
+      description: Remove permanentemente uma tarefa pelo seu ID
+      parameters:
+      - description: ID da tarefa (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Tarefa deletada com sucesso
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Deletar tarefa
+      tags:
+      - tasks
+    get:
+      description: Retorna uma tarefa específica pelo seu ID
+      parameters:
+      - description: ID da tarefa (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.successResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.Task'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Buscar tarefa por ID
+      tags:
+      - tasks
+    put:
+      consumes:
+      - application/json
+      description: Atualiza os dados de uma tarefa existente. Tarefas com status completed
+        não podem ser editadas.
+      parameters:
+      - description: ID da tarefa (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Dados para atualização
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/domain.UpdateTaskInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.successResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.Task'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Atualizar tarefa
+      tags:
+      - tasks
+schemes:
+- http
+swagger: "2.0"

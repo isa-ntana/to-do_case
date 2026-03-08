@@ -30,6 +30,17 @@ func (taskHandler *TaskHandler) RegisterRoutes(routerGroup *gin.RouterGroup) {
 	}
 }
 
+// Create godoc
+// @Summary      Criar tarefa
+// @Description  Cria uma nova tarefa com título, descrição, prioridade e data de vencimento
+// @Tags         tasks
+// @Accept       json
+// @Produce      json
+// @Param        task  body      domain.CreateTaskInput  true  "Dados da tarefa"
+// @Success      201   {object}  successResponse{data=domain.Task}
+// @Failure      400   {object}  errorResponse
+// @Failure      500   {object}  errorResponse
+// @Router       /tasks [post]
 func (taskHandler *TaskHandler) Create(context *gin.Context) {
 	var input domain.CreateTaskInput
 	if err := context.ShouldBindJSON(&input); err != nil {
@@ -50,6 +61,17 @@ func (taskHandler *TaskHandler) Create(context *gin.Context) {
 	respondSuccess(context, http.StatusCreated, task)
 }
 
+// List godoc
+// @Summary      Listar tarefas
+// @Description  Retorna todas as tarefas, com filtros opcionais por status, prioridade e data de vencimento
+// @Tags         tasks
+// @Produce      json
+// @Param        status    query     string  false  "Filtrar por status"      Enums(pending, in_progress, completed, cancelled)
+// @Param        priority  query     string  false  "Filtrar por prioridade"  Enums(low, medium, high)
+// @Param        due_date  query     string  false  "Filtrar por data de vencimento (YYYY-MM-DD)"
+// @Success      200       {object}  successResponse{data=[]domain.Task}
+// @Failure      500       {object}  errorResponse
+// @Router       /tasks [get]
 func (taskHandler *TaskHandler) List(context *gin.Context) {
 	filter := domain.TaskFilter{}
 
@@ -81,6 +103,16 @@ func (taskHandler *TaskHandler) List(context *gin.Context) {
 	respondSuccess(context, http.StatusOK, tasks)
 }
 
+// GetByID godoc
+// @Summary      Buscar tarefa por ID
+// @Description  Retorna uma tarefa específica pelo seu ID
+// @Tags         tasks
+// @Produce      json
+// @Param        id   path      string  true  "ID da tarefa (UUID)"
+// @Success      200  {object}  successResponse{data=domain.Task}
+// @Failure      404  {object}  errorResponse
+// @Failure      500  {object}  errorResponse
+// @Router       /tasks/{id} [get]
 func (taskHandler *TaskHandler) GetByID(context *gin.Context) {
 	id := context.Param("id")
 
@@ -94,6 +126,20 @@ func (taskHandler *TaskHandler) GetByID(context *gin.Context) {
 	respondSuccess(context, http.StatusOK, task)
 }
 
+// Update godoc
+// @Summary      Atualizar tarefa
+// @Description  Atualiza os dados de uma tarefa existente. Tarefas com status completed não podem ser editadas.
+// @Tags         tasks
+// @Accept       json
+// @Produce      json
+// @Param        id    path      string                  true  "ID da tarefa (UUID)"
+// @Param        task  body      domain.UpdateTaskInput  true  "Dados para atualização"
+// @Success      200   {object}  successResponse{data=domain.Task}
+// @Failure      400   {object}  errorResponse
+// @Failure      404   {object}  errorResponse
+// @Failure      422   {object}  errorResponse
+// @Failure      500   {object}  errorResponse
+// @Router       /tasks/{id} [put]
 func (taskHandler *TaskHandler) Update(context *gin.Context) {
 	id := context.Param("id")
 
@@ -116,6 +162,16 @@ func (taskHandler *TaskHandler) Update(context *gin.Context) {
 	respondSuccess(context, http.StatusOK, task)
 }
 
+// Delete godoc
+// @Summary      Deletar tarefa
+// @Description  Remove permanentemente uma tarefa pelo seu ID
+// @Tags         tasks
+// @Produce      json
+// @Param        id   path      string  true  "ID da tarefa (UUID)"
+// @Success      204  "Tarefa deletada com sucesso"
+// @Failure      404  {object}  errorResponse
+// @Failure      500  {object}  errorResponse
+// @Router       /tasks/{id} [delete]
 func (taskHandler *TaskHandler) Delete(context *gin.Context) {
 	id := context.Param("id")
 

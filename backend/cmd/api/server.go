@@ -3,12 +3,16 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/isa-ntana/to-do_case/internal/handler"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func setupServer(taskHandler *handler.TaskHandler) *gin.Engine {
 	router := gin.Default()
 
 	router.Use(corsMiddleware())
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	apiGroup := router.Group("/api/v1")
 	taskHandler.RegisterRoutes(apiGroup)
