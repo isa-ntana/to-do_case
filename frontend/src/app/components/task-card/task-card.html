@@ -1,0 +1,36 @@
+<div
+  class="task-card"
+  [class.task-card--overdue]="isOverdue()"
+  [class.task-card--completed]="task().status === 'completed'"
+  (click)="onCardClick()"
+>
+  <div class="task-card__priority-bar" [class]="'priority--' + task().priority"></div>
+
+  <div class="task-card__content">
+    <div class="task-card__header">
+      <h3 class="task-card__title">{{ task().title }}</h3>
+      <span class="task-card__status" [class]="'status--' + task().status">
+        {{ getStatusLabel(task().status) }}
+      </span>
+    </div>
+
+    @if (task().description) {
+      <p class="task-card__description">{{ task().description }}</p>
+    }
+
+    <div class="task-card__footer">
+      <div class="task-card__meta">
+        <span class="task-card__priority" [class]="'priority-text--' + task().priority">
+          ● {{ getPriorityLabel(task().priority) }}
+        </span>
+      </div>
+
+      <div class="task-card__date" [class.task-card__date--overdue]="isOverdue()">
+        @if (isOverdue()) {
+          <span class="task-card__overdue-label">Atrasada</span>
+        }
+        <span>{{ formatDate(task().due_date) }}</span>
+      </div>
+    </div>
+  </div>
+</div>
