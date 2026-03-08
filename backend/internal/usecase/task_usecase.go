@@ -9,7 +9,7 @@ import (
 )
 
 type TaskUseCase struct {
-	repo domain.TaskRepositorys
+	repo domain.TaskRepository
 }
 
 func NewTaskUseCase(repo domain.TaskRepository) *TaskUseCase {
