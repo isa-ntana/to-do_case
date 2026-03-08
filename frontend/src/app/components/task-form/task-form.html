@@ -1,0 +1,106 @@
+<div class="task-form">
+  <h2 class="task-form__title">
+    {{ isEditMode ? 'Editar tarefa' : 'Nova tarefa' }}
+  </h2>
+
+  @if (task()?.status === 'completed') {
+    <div class="task-form__notice">
+      Tarefas concluídas não podem ser editadas.
+    </div>
+  }
+
+  <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="task-form__form">
+
+    <div class="task-form__field">
+      <label class="task-form__label" for="title">Título <span class="task-form__required">*</span></label>
+      <input
+        id="title"
+        type="text"
+        class="task-form__input"
+        formControlName="title"
+        placeholder="Nome da tarefa"
+        [class.task-form__input--error]="hasError('title', 'required') || hasError('title', 'minlength') || hasError('title', 'maxlength')"
+      />
+      @if (hasError('title', 'required')) {
+        <span class="task-form__error">Título é obrigatório</span>
+      }
+      @if (hasError('title', 'minlength')) {
+        <span class="task-form__error">Mínimo 3 caracteres</span>
+      }
+      @if (hasError('title', 'maxlength')) {
+        <span class="task-form__error">Máximo 100 caracteres</span>
+      }
+    </div>
+
+    <div class="task-form__field">
+      <label class="task-form__label" for="description">Descrição</label>
+      <textarea
+        id="description"
+        class="task-form__textarea"
+        formControlName="description"
+        placeholder="Descreva a tarefa (opcional)"
+        rows="3"
+      ></textarea>
+    </div>
+
+    <div class="task-form__row">
+      <div class="task-form__field">
+        <label class="task-form__label" for="status">Status</label>
+        <select id="status" class="task-form__select" formControlName="status">
+          @for (option of statusOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="task-form__field">
+        <label class="task-form__label" for="priority">Prioridade</label>
+        <select id="priority" class="task-form__select" formControlName="priority">
+          @for (option of priorityOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="task-form__field">
+      <label class="task-form__label" for="due_date">
+        Data de vencimento <span class="task-form__required">*</span>
+      </label>
+      <input
+        id="due_date"
+        type="date"
+        class="task-form__input"
+        formControlName="due_date"
+        [min]="todayDate"
+        [class.task-form__input--error]="hasError('due_date', 'required') || hasError('due_date', 'pastDate')"
+      />
+      @if (hasError('due_date', 'required')) {
+        <span class="task-form__error">Data de vencimento é obrigatória</span>
+      }
+      @if (hasError('due_date', 'pastDate')) {
+        <span class="task-form__error">A data de vencimento não pode ser no passado</span>
+      }
+    </div>
+
+    <div class="task-form__actions">
+      <button type="button" class="task-form__btn task-form__btn--cancel" (click)="onCancel()">
+        Cancelar
+      </button>
+      @if (task()?.status !== 'completed') {
+        <button
+          type="submit"
+          class="task-form__btn task-form__btn--submit"
+          [disabled]="loading()"
+        >
+          @if (loading()) {
+            Salvando...
+          } @else {
+            {{ isEditMode ? 'Salvar alterações' : 'Criar tarefa' }}
+          }
+        </button>
+      }
+    </div>
+
+  </form>
+</div>
