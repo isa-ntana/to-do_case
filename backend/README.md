@@ -291,10 +291,34 @@ Todos os erros seguem o mesmo formato:
 | `422` | Tentativa de editar tarefa com status `completed` |
 | `500` | Erro interno do servidor |
 
+## Documentação Interativa (Swagger)
+
+Com a API rodando, acesse:
+```
+http://localhost:8080/swagger/index.html
+```
+
+A UI permite visualizar todos os endpoints, seus parâmetros, exemplos de request e response, e testar as chamadas diretamente no browser sem precisar de Postman ou curl.
+
+A documentação é gerada automaticamente a partir das anotações no código via [swaggo/swag](https://github.com/swaggo/swag). Para regenerar após alterações:
+```bash
+swag init -g cmd/api/main.go
+```
+<br>
+
 ## Testes Unitários
 
-Para rodar os testes unitários:
+O repositório é simulado via mock, sem necessidade de DynamoDB rodando. Para rodar basta estar no diretório backend e digitar no terminal:
 ```bash
-cd backend
 go test ./internal/usecase/... -v
+```
+
+Casos cobertos:
+
+| Método | Cenário |
+|---|---|
+| `Create` | Criação com sucesso, data no passado, status inicial inválido, prioridade inválida, defaults de status e prioridade |
+| `GetByID` | Tarefa encontrada, tarefa não encontrada |
+| `Update` | Atualização com sucesso, tarefa completed, status inválido, data no passado, tarefa não encontrada |
+| `Delete` | Deleção com sucesso, tarefa não encontrada |
 ```
