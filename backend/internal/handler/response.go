@@ -15,16 +15,16 @@ type successResponse struct {
 	Data interface{} `json:"data"`
 }
 
-func respondError(c *gin.Context, err error) {
+func respondError(context *gin.Context, err error) {
 	if appErr, ok := err.(*apperrors.AppError); ok {
-		c.JSON(appErr.Code, errorResponse{Error: appErr.Message})
+		context.JSON(appErr.Code, errorResponse{Error: appErr.Message})
 		return
 	}
-	c.JSON(http.StatusInternalServerError, errorResponse{
+	context.JSON(http.StatusInternalServerError, errorResponse{
 		Error: "erro interno do servidor",
 	})
 }
 
-func respondSuccess(c *gin.Context, status int, data interface{}) {
-	c.JSON(status, successResponse{Data: data})
+func respondSuccess(context *gin.Context, status int, data interface{}) {
+	context.JSON(status, successResponse{Data: data})
 }

@@ -12,61 +12,61 @@ import (
 )
 
 type TaskHandler struct {
-	uc *usecase.TaskUseCase
+	useCase *usecase.TaskUseCase
 }
 
-func NewTaskHandler(uc *usecase.TaskUseCase) *TaskHandler {
-	return &TaskHandler{uc: uc}
+func NewTaskHandler(useCase *usecase.TaskUseCase) *TaskHandler {
+	return &TaskHandler{useCase: useCase}
 }
 
-func (h *TaskHandler) RegisterRoutes(rg *gin.RouterGroup) {
-	tasks := rg.Group("/tasks")
+func (taskHandler *TaskHandler) RegisterRoutes(routerGroup *gin.RouterGroup) {
+	tasksGroup := routerGroup.Group("/tasks")
 	{
-		tasks.POST("", h.Create)
-		tasks.GET("", h.List)
-		tasks.GET("/:id", h.GetByID)
-		tasks.PUT("/:id", h.Update)
-		tasks.DELETE("/:id", h.Delete)
+		tasksGroup.POST("", taskHandler.Create)
+		tasksGroup.GET("", taskHandler.List)
+		tasksGroup.GET("/:id", taskHandler.GetByID)
+		tasksGroup.PUT("/:id", taskHandler.Update)
+		tasksGroup.DELETE("/:id", taskHandler.Delete)
 	}
 }
 
-func (h *TaskHandler) Create(c *gin.Context) {
+func (taskHandler *TaskHandler) Create(context *gin.Context) {
 	var input domain.CreateTaskInput
-	if err := c.ShouldBindJSON(&input); err != nil {
-		respondError(c, &apperrors.AppError{
+	if err := context.ShouldBindJSON(&input); err != nil {
+		respondError(context, &apperrors.AppError{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
 		return
 	}
 
-	task, err := h.uc.Create(input)
+	task, err := taskHandler.useCase.Create(input)
 	if err != nil {
 		logger.Error("erro ao criar tarefa", zap.Error(err))
-		respondError(c, err)
+		respondError(context, err)
 		return
 	}
 
-	respondSuccess(c, http.StatusCreated, task)
+	respondSuccess(context, http.StatusCreated, task)
 }
 
-func (h *TaskHandler) List(c *gin.Context) {
+func (taskHandler *TaskHandler) List(context *gin.Context) {
 	filter := domain.TaskFilter{}
 
-	if s := c.Query("status"); s != "" {
-		status := domain.Status(s)
+	if statusQuery := context.Query("status"); statusQuery != "" {
+		status := domain.Status(statusQuery)
 		filter.Status = &status
 	}
 
-	if p := c.Query("priority"); p != "" {
-		priority := domain.Priority(p)
+	if priorityQuery := context.Query("priority"); priorityQuery != "" {
+		priority := domain.Priority(priorityQuery)
 		filter.Priority = &priority
 	}
 
-	tasks, err := h.uc.GetAll(filter)
+	tasks, err := taskHandler.useCase.GetAll(filter)
 	if err != nil {
 		logger.Error("erro ao listar tarefas", zap.Error(err))
-		respondError(c, err)
+		respondError(context, err)
 		return
 	}
 
@@ -74,52 +74,52 @@ func (h *TaskHandler) List(c *gin.Context) {
 		tasks = []*domain.Task{}
 	}
 
-	respondSuccess(c, http.StatusOK, tasks)
+	respondSuccess(context, http.StatusOK, tasks)
 }
 
-func (h *TaskHandler) GetByID(c *gin.Context) {
-	id := c.Param("id")
+func (taskHandler *TaskHandler) GetByID(context *gin.Context) {
+	id := context.Param("id")
 
-	task, err := h.uc.GetByID(id)
+	task, err := taskHandler.useCase.GetByID(id)
 	if err != nil {
 		logger.Error("erro ao buscar tarefa", zap.String("id", id), zap.Error(err))
-		respondError(c, err)
+		respondError(context, err)
 		return
 	}
 
-	respondSuccess(c, http.StatusOK, task)
+	respondSuccess(context, http.StatusOK, task)
 }
 
-func (h *TaskHandler) Update(c *gin.Context) {
-	id := c.Param("id")
+func (taskHandler *TaskHandler) Update(context *gin.Context) {
+	id := context.Param("id")
 
 	var input domain.UpdateTaskInput
-	if err := c.ShouldBindJSON(&input); err != nil {
-		respondError(c, &apperrors.AppError{
+	if err := context.ShouldBindJSON(&input); err != nil {
+		respondError(context, &apperrors.AppError{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
 		return
 	}
 
-	task, err := h.uc.Update(id, input)
+	task, err := taskHandler.useCase.Update(id, input)
 	if err != nil {
 		logger.Error("erro ao atualizar tarefa", zap.String("id", id), zap.Error(err))
-		respondError(c, err)
+		respondError(context, err)
 		return
 	}
 
-	respondSuccess(c, http.StatusOK, task)
+	respondSuccess(context, http.StatusOK, task)
 }
 
-func (h *TaskHandler) Delete(c *gin.Context) {
-	id := c.Param("id")
+func (taskHandler *TaskHandler) Delete(context *gin.Context) {
+	id := context.Param("id")
 
-	if err := h.uc.Delete(id); err != nil {
+	if err := taskHandler.useCase.Delete(id); err != nil {
 		logger.Error("erro ao deletar tarefa", zap.String("id", id), zap.Error(err))
-		respondError(c, err)
+		respondError(context, err)
 		return
 	}
 
-	c.Status(http.StatusNoContent)
+	context.Status(http.StatusNoContent)
 }
