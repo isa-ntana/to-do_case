@@ -63,6 +63,10 @@ func (taskHandler *TaskHandler) List(context *gin.Context) {
 		filter.Priority = &priority
 	}
 
+	if dueDateQuery := context.Query("due_date"); dueDateQuery != "" {
+		filter.DueDate = &dueDateQuery
+	}
+
 	tasks, err := taskHandler.useCase.GetAll(filter)
 	if err != nil {
 		logger.Error("erro ao listar tarefas", zap.Error(err))

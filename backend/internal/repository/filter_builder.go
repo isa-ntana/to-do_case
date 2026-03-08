@@ -34,13 +34,21 @@ func buildScanFilter(filter domain.TaskFilter) *scanFilter {
 		}
 	}
 
+	if filter.DueDate != nil {
+		expressions = append(expressions, "#dd = :due_date")
+		names["#dd"] = "due_date"
+		values[":due_date"] = &types.AttributeValueMemberS{
+			Value: *filter.DueDate,
+		}
+	}
+
 	if len(expressions) == 0 {
 		return nil
 	}
 
 	expr := expressions[0]
-	for i := 1; i < len(expressions); i++ {
-		expr = fmt.Sprintf("%s AND %s", expr, expressions[i])
+	for index := 1; index < len(expressions); index++ {
+		expr = fmt.Sprintf("%s AND %s", expr, expressions[index])
 	}
 
 	return &scanFilter{

@@ -16,7 +16,7 @@ func NewTaskUseCase(repo domain.TaskRepository) *TaskUseCase {
 	return &TaskUseCase{repo: repo}
 }
 
-func (uc *TaskUseCase) Create(input domain.CreateTaskInput) (*domain.Task, error) {
+func (useCase *TaskUseCase) Create(input domain.CreateTaskInput) (*domain.Task, error) {
 	if err := validateDueDate(input.DueDate); err != nil {
 		return nil, err
 	}
@@ -25,9 +25,19 @@ func (uc *TaskUseCase) Create(input domain.CreateTaskInput) (*domain.Task, error
 	if priority == "" {
 		priority = domain.PriorityMedium
 	}
-
 	if err := validatePriority(priority); err != nil {
 		return nil, err
+	}
+
+	status := input.Status
+	if status == "" {
+		status = domain.StatusPending
+	}
+	if status != domain.StatusPending && status != domain.StatusInProgress {
+		return nil, &apperrors.AppError{
+			Code:    400,
+			Message: "status inicial deve ser pending ou in_progress",
+		}
 	}
 
 	now := time.Now().UTC()
@@ -35,25 +45,25 @@ func (uc *TaskUseCase) Create(input domain.CreateTaskInput) (*domain.Task, error
 		ID:          uuid.NewString(),
 		Title:       input.Title,
 		Description: input.Description,
-		Status:      domain.StatusPending,
+		Status:      status,
 		Priority:    priority,
 		DueDate:     input.DueDate,
 		CreatedAt:   now,
 		UpdatedAt:   now,
 	}
 
-	if err := uc.repo.Create(task); err != nil {
+	if err := useCase.repo.Create(task); err != nil {
 		return nil, err
 	}
 
 	return task, nil
 }
 
-func (uc *TaskUseCase) GetByID(id string) (*domain.Task, error) {
-	return uc.repo.FindByID(id)
+func (useCase *TaskUseCase) GetByID(id string) (*domain.Task, error) {
+	return useCase.repo.FindByID(id)
 }
 
-func (uc *TaskUseCase) GetAll(filter domain.TaskFilter) ([]*domain.Task, error) {
+func (useCase *TaskUseCase) GetAll(filter domain.TaskFilter) ([]*domain.Task, error) {
 	if filter.Status != nil {
 		if err := validateStatus(*filter.Status); err != nil {
 			return nil, err
@@ -66,7 +76,7 @@ func (uc *TaskUseCase) GetAll(filter domain.TaskFilter) ([]*domain.Task, error) 
 		}
 	}
 
-	tasks, err := uc.repo.FindAll(filter)
+	tasks, err := useCase.repo.FindAll(filter)
 	if err != nil {
 		return nil, err
 	}
@@ -74,8 +84,8 @@ func (uc *TaskUseCase) GetAll(filter domain.TaskFilter) ([]*domain.Task, error) 
 	return tasks, nil
 }
 
-func (uc *TaskUseCase) Update(id string, input domain.UpdateTaskInput) (*domain.Task, error) {
-	task, err := uc.repo.FindByID(id)
+func (useCase *TaskUseCase) Update(id string, input domain.UpdateTaskInput) (*domain.Task, error) {
+	task, err := useCase.repo.FindByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -115,18 +125,18 @@ func (uc *TaskUseCase) Update(id string, input domain.UpdateTaskInput) (*domain.
 
 	task.UpdatedAt = time.Now().UTC()
 
-	if err := uc.repo.Update(task); err != nil {
+	if err := useCase.repo.Update(task); err != nil {
 		return nil, err
 	}
 
 	return task, nil
 }
 
-func (uc *TaskUseCase) Delete(id string) error {
-	_, err := uc.repo.FindByID(id)
+func (useCase *TaskUseCase) Delete(id string) error {
+	_, err := useCase.repo.FindByID(id)
 	if err != nil {
 		return err
 	}
 
-	return uc.repo.Delete(id)
+	return useCase.repo.Delete(id)
 }
