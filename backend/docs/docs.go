@@ -320,21 +320,34 @@ const docTemplate = `{
             ],
             "properties": {
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Revisar conceitos de goroutines"
                 },
                 "due_date": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2026-04-01"
                 },
                 "priority": {
-                    "$ref": "#/definitions/domain.Priority"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/domain.Priority"
+                        }
+                    ],
+                    "example": "high"
                 },
                 "status": {
-                    "$ref": "#/definitions/domain.Status"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/domain.Status"
+                        }
+                    ],
+                    "example": "pending"
                 },
                 "title": {
                     "type": "string",
                     "maxLength": 100,
-                    "minLength": 3
+                    "minLength": 3,
+                    "example": "Estudar Golang"
                 }
             }
         },
@@ -370,28 +383,44 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2026-03-08T22:00:00Z"
                 },
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Revisar conceitos de goroutines"
                 },
                 "due_date": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2026-04-01"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
                 },
                 "priority": {
-                    "$ref": "#/definitions/domain.Priority"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/domain.Priority"
+                        }
+                    ],
+                    "example": "high"
                 },
                 "status": {
-                    "$ref": "#/definitions/domain.Status"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/domain.Status"
+                        }
+                    ],
+                    "example": "pending"
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Estudar Golang"
                 },
                 "updated_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2026-03-08T22:00:00Z"
                 }
             }
         },
@@ -399,19 +428,32 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Conteúdo atualizado"
                 },
                 "due_date": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2026-04-10"
                 },
                 "priority": {
-                    "$ref": "#/definitions/domain.Priority"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/domain.Priority"
+                        }
+                    ],
+                    "example": "medium"
                 },
                 "status": {
-                    "$ref": "#/definitions/domain.Status"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/domain.Status"
+                        }
+                    ],
+                    "example": "in_progress"
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Estudar Golang - Atualizado"
                 }
             }
         },

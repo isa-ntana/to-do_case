@@ -3,14 +3,21 @@ definitions:
   domain.CreateTaskInput:
     properties:
       description:
+        example: Revisar conceitos de goroutines
         type: string
       due_date:
+        example: "2026-04-01"
         type: string
       priority:
-        $ref: '#/definitions/domain.Priority'
+        allOf:
+        - $ref: '#/definitions/domain.Priority'
+        example: high
       status:
-        $ref: '#/definitions/domain.Status'
+        allOf:
+        - $ref: '#/definitions/domain.Status'
+        example: pending
       title:
+        example: Estudar Golang
         maxLength: 100
         minLength: 3
         type: string
@@ -43,33 +50,50 @@ definitions:
   domain.Task:
     properties:
       created_at:
+        example: "2026-03-08T22:00:00Z"
         type: string
       description:
+        example: Revisar conceitos de goroutines
         type: string
       due_date:
+        example: "2026-04-01"
         type: string
       id:
+        example: 550e8400-e29b-41d4-a716-446655440000
         type: string
       priority:
-        $ref: '#/definitions/domain.Priority'
+        allOf:
+        - $ref: '#/definitions/domain.Priority'
+        example: high
       status:
-        $ref: '#/definitions/domain.Status'
+        allOf:
+        - $ref: '#/definitions/domain.Status'
+        example: pending
       title:
+        example: Estudar Golang
         type: string
       updated_at:
+        example: "2026-03-08T22:00:00Z"
         type: string
     type: object
   domain.UpdateTaskInput:
     properties:
       description:
+        example: Conteúdo atualizado
         type: string
       due_date:
+        example: "2026-04-10"
         type: string
       priority:
-        $ref: '#/definitions/domain.Priority'
+        allOf:
+        - $ref: '#/definitions/domain.Priority'
+        example: medium
       status:
-        $ref: '#/definitions/domain.Status'
+        allOf:
+        - $ref: '#/definitions/domain.Status'
+        example: in_progress
       title:
+        example: Estudar Golang - Atualizado
         type: string
     type: object
   handler.errorResponse:
