@@ -14,8 +14,21 @@ import (
 	"github.com/isa-ntana/to-do_case/internal/repository"
 	"github.com/isa-ntana/to-do_case/internal/usecase"
 	"github.com/isa-ntana/to-do_case/pkg/logger"
+
+	_ "github.com/isa-ntana/to-do_case/docs"
 )
 
+// @title           TaskFlow API
+// @version         1.0
+// @description     API REST para gerenciamento de tarefas (To-Do List). Desenvolvida como desafio técnico para o Itaú.
+
+// @contact.name    Isabela Santana
+// @contact.url     https://github.com/isa-ntana/to-do_case
+
+// @host            localhost:8080
+// @BasePath        /api/v1
+
+// @schemes         http
 func main() {
 	logger.Init()
 	defer logger.Sync()
