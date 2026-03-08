@@ -1,6 +1,6 @@
 # TaskFlow API
 
-> API REST para gerenciamento de tarefas. Construída em **Go** com **Gin**, **DynamoDB Local** e **Clean Architecture**, a TaskFlow API oferece um CRUD completo de tarefas com regras de negócio, validações, logs estruturados e suporte a Docker.
+> API REST para gerenciamento de tarefas. Construída em **Go** com **Gin**, **DynamoDB Local** e **Clean Architecture**, a TaskFlow API oferece um CRUD completo de tarefas com regras de negócio, validações, logs estruturados, testes unitários e Docker.
 
 <br>
 
@@ -290,3 +290,11 @@ Todos os erros seguem o mesmo formato:
 | `404` | Tarefa não encontrada |
 | `422` | Tentativa de editar tarefa com status `completed` |
 | `500` | Erro interno do servidor |
+
+## Testes Unitários
+
+Para rodar os testes unitários:
+```bash
+cd backend
+go test ./internal/usecase/... -v
+```
