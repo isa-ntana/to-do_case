@@ -1,10 +1,10 @@
 package domain
 
 type CreateTaskInput struct {
-	Title       string   `json:"title"  binding:"required,min=1,max=100"`
+	Title       string   `json:"title"  binding:"required,min=3,max=100"`
 	Description string   `json:"description"`
-	Priority    Priority `json:"priority"`
-	DueDate     string   `json:"due_date"`
+	Priority    Priority `json:"priority"   binding:"required"`
+	DueDate     string   `json:"due_date"  binding:"required"`
 }
 
 type UpdateTaskInput struct {
