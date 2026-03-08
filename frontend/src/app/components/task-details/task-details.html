@@ -1,0 +1,95 @@
+<div class="task-details__overlay" (click)="onClose()"></div>
+
+<div class="task-details__drawer">
+  <div class="task-details__header">
+    <button class="task-details__close" (click)="onClose()">✕</button>
+  </div>
+
+  <div class="task-details__body">
+    @if (isEditMode()) {
+      <app-task-form
+        [task]="task()"
+        [loading]="isLoading()"
+        (formSubmitted)="onFormSubmit($event)"
+        (formCancelled)="onFormCancelled()"
+      />
+    } @else {
+      <div class="task-details__view">
+
+        <div class="task-details__badges">
+          <span class="task-details__status" [class]="'status--' + task().status">
+            {{ getStatusLabel(task().status) }}
+          </span>
+          <span class="task-details__priority" [class]="'priority-text--' + task().priority">
+            ● {{ getPriorityLabel(task().priority) }}
+          </span>
+        </div>
+
+        <h2 class="task-details__title">{{ task().title }}</h2>
+
+        @if (task().description) {
+          <p class="task-details__description">{{ task().description }}</p>
+        }
+
+        <div class="task-details__info">
+          <div class="task-details__info-row">
+            <span class="task-details__info-label">Vencimento</span>
+            <span class="task-details__info-value">{{ formatDate(task().due_date) }}</span>
+          </div>
+          <div class="task-details__info-row">
+            <span class="task-details__info-label">Criada em</span>
+            <span class="task-details__info-value">{{ formatDateTime(task().created_at) }}</span>
+          </div>
+          <div class="task-details__info-row">
+            <span class="task-details__info-label">Atualizada em</span>
+            <span class="task-details__info-value">{{ formatDateTime(task().updated_at) }}</span>
+          </div>
+        </div>
+
+        @if (showDeleteConfirm()) {
+          <div class="task-details__confirm">
+            <p class="task-details__confirm-text">Tem certeza que deseja deletar esta tarefa?</p>
+            <div class="task-details__confirm-actions">
+              <button class="task-details__btn task-details__btn--ghost" (click)="onDeleteCancel()">
+                Cancelar
+              </button>
+              <button class="task-details__btn task-details__btn--danger" (click)="onDeleteConfirm()" [disabled]="isLoading()">
+                {{ isLoading() ? 'Deletando...' : 'Confirmar' }}
+              </button>
+            </div>
+          </div>
+        }
+
+        <div class="task-details__actions">
+          <button
+            class="task-details__btn task-details__btn--ghost"
+            (click)="onDeleteClick()"
+            [disabled]="isLoading()"
+          >
+            Deletar
+          </button>
+
+          @if (task().status !== 'completed' && task().status !== 'cancelled') {
+            <button
+              class="task-details__btn task-details__btn--secondary"
+              (click)="onMarkCompleted()"
+              [disabled]="isLoading()"
+            >
+              {{ isLoading() ? 'Salvando...' : 'Marcar como concluída' }}
+            </button>
+          }
+
+          @if (task().status !== 'completed') {
+            <button
+              class="task-details__btn task-details__btn--primary"
+              (click)="onEditClick()"
+            >
+              Editar
+            </button>
+          }
+        </div>
+
+      </div>
+    }
+  </div>
+</div>
