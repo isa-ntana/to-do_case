@@ -64,17 +64,22 @@
     </div>
 
     <div class="task-form__field">
-      <label class="task-form__label" for="due_date">Data de vencimento <span class="task-form__required">*</span></label>
+      <label class="task-form__label" for="due_date">
+        Data de vencimento <span class="task-form__required">*</span>
+      </label>
       <input
         id="due_date"
         type="date"
         class="task-form__input"
         formControlName="due_date"
         [min]="todayDate"
-        [class.task-form__input--error]="hasError('due_date', 'required')"
+        [class.task-form__input--error]="hasError('due_date', 'required') || hasError('due_date', 'pastDate')"
       />
       @if (hasError('due_date', 'required')) {
         <span class="task-form__error">Data de vencimento é obrigatória</span>
+      }
+      @if (hasError('due_date', 'pastDate')) {
+        <span class="task-form__error">A data de vencimento não pode ser no passado</span>
       }
     </div>
 
