@@ -34,12 +34,20 @@ export class TaskForm implements OnInit {
 
   taskForm!: FormGroup;
 
-  readonly statusOptions: { value: TaskStatus; label: string }[] = [
-    { value: 'pending', label: 'Pendente' },
-    { value: 'in_progress', label: 'Em progresso' },
-    { value: 'completed', label: 'Concluída' },
-    { value: 'cancelled', label: 'Cancelada' }
-  ];
+  get statusOptions(): { value: TaskStatus; label: string }[] {
+    if (this.isEditMode) {
+      return [
+        { value: 'pending', label: 'Pendente' },
+        { value: 'in_progress', label: 'Em progresso' },
+        { value: 'completed', label: 'Concluída' },
+        { value: 'cancelled', label: 'Cancelada' }
+      ];
+    }
+    return [
+      { value: 'pending', label: 'Pendente' },
+      { value: 'in_progress', label: 'Em progresso' }
+    ];
+  }
 
   readonly priorityOptions: { value: TaskPriority; label: string }[] = [
     { value: 'low', label: 'Baixa' },
